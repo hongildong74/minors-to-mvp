@@ -1370,7 +1370,7 @@ function makeCands(pos){
 }
 function newCareer(){
   const c=C.cands[C.pick];
-  S={v:2,name:(C.name||'').trim()||'이름 없는 신인',num:clamp(C.num!==''&&Number.isFinite(parseInt(C.num))?parseInt(C.num):ri(1,99),0,99),pos:C.pos,hand:C.hand,avatar:AVS[C.avatar],
+  S={v:2,name:(C.name||'').trim()||'이름 없는 신인',num:clamp(C.num!==''&&Number.isFinite(parseInt(C.num))?parseInt(C.num):ri(1,99),0,99),pos:C.pos,hand:C.hand,nation:C.nation||'대한민국',avatar:AVS[C.avatar],
     style:c.style,stats:{...c.stats},pot:c.pot,trait:c.trait,focus:C.focus.slice(0,2),morale:65,
     age:16,year:START_YEAR,org:'HS',grade:1,team:tnames('HS')[C.school],role:null,comp:null,univ:false,
     contract:{type:'amateur'},sal:0,earn:0,proYears:0,osYears:0,served:false,exempt:false,armyLeft:0,lastKR:null,
@@ -2436,7 +2436,18 @@ function renderCreate(){
     <div class="sec" style="padding:4px 16px;gap:0;background:var(--fill)">
       <div class="opt-row"><span>포지션</span><select id="c-pos" aria-label="포지션">${POSORDER.map(p=>`<option value="${p}" ${C.pos===p?'selected':''}>${p} ${SUBPOS[p].n}</option>`).join('')}</select></div>
       <div class="opt-row"><span>투타</span><div class="seg">${['우투우타','우투좌타','좌투좌타'].map(h=>`<button class="${C.hand===h?'on':''}" data-a="c-hand" data-v="${h}">${h}</button>`).join('')}</div></div>
-      <div class="opt-row"><span>국적</span><b style="font-size:15px">대한민국</b></div>
+<div class="opt-row">
+  <span>국적</span>
+  <select id="c-nation">
+    <option value="대한민국">대한민국</option>
+    <option value="미국">미국</option>
+    <option value="일본">일본</option>
+    <option value="도미니카공화국">도미니카공화국</option>
+    <option value="쿠바">쿠바</option>
+    <option value="베네수엘라">베네수엘라</option>
+    <option value="대만">대만</option>
+  </select>
+</div>
       <div class="opt-row"><span>고등학교</span><select id="c-school" aria-label="고등학교">${TEAMS.HS.map(([n,,r],i)=>`<option value="${i}" ${C.school===i?'selected':''}>${n} · ${r}</option>`).join('')}</select></div>
     </div>
     <p class="desc" style="font-size:12px">학교, 구단, 리그, 대회는 실제 이름을 빌려 왔어요. 공식 제휴가 아니고, 경기 결과와 기록, 계약은 모두 가상이에요.</p>`;
@@ -5269,7 +5280,13 @@ function act(a,v){
   if(a==='c-ava')C.avatar=+v;
   else if(a==='c-hand')C.hand=v;
   else if(a==='c-back')C.step=Math.max(0,C.step-1);
-  else if(a==='c-next'){C.step++;top=true}
+  else if(a==='c-next'){
+  if(C.step===0){
+    C.nation=document.getElementById('c-nation')?.value||'대한민국';
+  }
+  C.step++;
+  top=true;
+}
   else if(a==='c-pick')C.pick=+v;
   else if(a==='c-reroll'){C.cands=makeCands(C.pos);C.pick=0}
   else if(a==='c-focus'){const i=C.focus.indexOf(v);if(i>=0)C.focus.splice(i,1);else{if(C.focus.length>=2)C.focus.shift();C.focus.push(v)}}
